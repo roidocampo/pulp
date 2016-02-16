@@ -1,0 +1,111 @@
+<?xml version="1.0"?>
+<interface>
+    <menu id="app-menu">
+        <section>
+            <item>
+                <attribute name="label">Duplicate</attribute>
+                <attribute name="action">win.duplicate</attribute>
+                <attribute name='accel'>&lt;Primary&gt;D</attribute>
+            </item>
+            <item>
+                <attribute name="label">Open in Preview</attribute>
+                <attribute name="action">win.preview</attribute>
+                <attribute name='accel'>&lt;Primary&gt;A</attribute>
+            </item>
+            <item>
+                <attribute name="label">Print (using Preview)</attribute>
+                <attribute name="action">win.print</attribute>
+                <attribute name='accel'>&lt;Primary&gt;P</attribute>
+            </item>
+            <item>
+                <attribute name="label">Close</attribute>
+                <attribute name="action">win.close</attribute>
+                <attribute name='accel'>&lt;Primary&gt;W</attribute>
+            </item>
+        </section>
+        <section>
+            <item>
+                <attribute name="label">Copy</attribute>
+                <attribute name="action">win.copy</attribute>
+                <attribute name='accel'>&lt;Primary&gt;C</attribute>
+            </item>
+        </section>
+        <section>
+            <item>
+                <attribute name="label">Zoom In</attribute>
+                <attribute name="action">win.zoom_in</attribute>
+                <attribute name='accel'>equal</attribute>
+            </item>
+            <item>
+                <attribute name="label">Zoom Out</attribute>
+                <attribute name="action">win.zoom_out</attribute>
+                <attribute name='accel'>minus</attribute>
+            </item>
+            <item>
+                <attribute name="label">Zoom 100%</attribute>
+                <attribute name="action">win.zoom_100</attribute>
+                <attribute name='accel'>&lt;Primary&gt;1</attribute>
+            </item>
+            <item>
+                <attribute name="label">Zoom Fit Width</attribute>
+                <attribute name="action">win.zoom_fit_width</attribute>
+                <attribute name='accel'>&lt;Primary&gt;0</attribute>
+            </item>
+            <item>
+                <attribute name="label">Zoom Fit Page</attribute>
+                <attribute name="action">win.zoom_fit_page</attribute>
+                <attribute name='accel'>&lt;Primary&gt;o</attribute>
+            </item>
+        </section>
+        <section>
+            <item>
+                <attribute name="label">Go Next</attribute>
+                <attribute name="action">win.go_next</attribute>
+                <attribute name='accel'>&lt;Primary&gt;bracketright</attribute>
+            </item>
+            <item>
+                <attribute name="label">Go Previous</attribute>
+                <attribute name="action">win.go_previous</attribute>
+                <attribute name='accel'>&lt;Primary&gt;bracketleft</attribute>
+            </item>
+        </section>
+        <section>
+            <item>
+                <attribute name="label">Find</attribute>
+                <attribute name="action">win.find</attribute>
+                <attribute name='accel'>&lt;Primary&gt;F</attribute>
+            </item>
+            <item>
+                <attribute name="label">Find Next</attribute>
+                <attribute name="action">win.find_next</attribute>
+                <attribute name='accel'>&lt;Primary&gt;G</attribute>
+            </item>
+            <item>
+                <attribute name="label">Find Previous</attribute>
+                <attribute name="action">win.find_previous</attribute>
+                <attribute name='accel'>&lt;Primary&gt;&lt;Shift&gt;G</attribute>
+            </item>
+        </section>
+        <section>
+            <item>
+                <attribute name="label">BibTeX Information</attribute>
+                <attribute name="action">win.bibtex</attribute>
+                <attribute name='accel'>&lt;Primary&gt;I</attribute>
+            </item>
+        </section>
+        <section>
+            <item>
+                <attribute name="label">Toggle full screen</attribute>
+                <attribute name="action">win.fullscreen</attribute>
+                <attribute name='accel'>&lt;Primary&gt;Y</attribute>
+            </item>
+        </section>
+        <section>
+            <item>
+                <attribute name="label">_Quit</attribute>
+                <attribute name="action">win.quit</attribute>
+                <attribute name='accel'>&lt;Primary&gt;Q</attribute>
+            </item>
+        </section>
+    </menu>
+</interface>

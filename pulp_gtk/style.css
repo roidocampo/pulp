@@ -1,0 +1,109 @@
+/*
+GtkInfoBar {
+    background-color: #A0BACE;
+    color: black;
+    border-top: 1px solid black;
+    text-shadow: none;
+}
+
+GtkInfoBar GtkButton {
+    padding: 0;
+    background: none;
+    color: navy;
+    border-color: rgba(0,0,0,0);
+    box-shadow: none;
+    text-shadow: none;
+}
+
+GtkInfoBar GtkButton:hover {
+    border-color: navy;
+}
+*/
+
+#sidebar {
+    background-color: #A0BACE;
+    padding: 10px;
+    border-right-color: black;
+    border-top: none;
+    border-bottom: none;
+    border-left: none;
+}
+
+.bibtex-container {
+    padding: 10px;
+    border-left-color: black;
+    border-top: none;
+    border-bottom: none;
+    border-right: none;
+}
+
+.bibtex-container GtkTextView {
+    padding: 5px;
+    background-color: rgba(0,0,0,0);
+    /* font-size: large; */
+}
+
+.bibtex-container GtkTextView:selected {
+    background-color: #4A90D9;
+}
+
+#pages-label, #separator-label {
+    background-color: #A0BACE;
+    padding-top: 15px;
+}
+
+#sidebar GtkTreeView {
+    padding: 5px;
+    border-bottom: 1px solid #555;
+    color: #728E9D;
+    background-color: #A0BACE;
+}
+
+#sidebar GtkTreeView:Selected {
+    background-color: #A0BACE;
+    color: black;
+}
+
+#sidebar GtkSearchEntry {
+    border: 1px solid black;
+}
+
+.bib-window .outer-frame {
+    padding: 10px;
+    border: none;
+}
+
+.bib-window .outer-frame.personal {
+    padding-right: 5px;
+}
+
+.bib-window .outer-frame.online {
+    padding-left: 5px;
+}
+
+.bib-window GtkTextView {
+    padding: 3px;
+}
+
+.bib-window .personal .inner-frame {
+    padding-right: 5px;
+    border-bottom: none;
+}
+
+.bib-window .title-label {
+    padding-bottom: 3px;
+}
+
+.bib-window .modified {
+    background-color: #FCF5E4;
+}
+
+.bib-window .modified:selected {
+    background-color: #4A90D9;
+}
+
+.bib-window .save-bar {
+    padding-top: 5px;
+    border: none;
+}
+

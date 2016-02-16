@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+
+    <template class="PulpWindow" parent="GtkApplicationWindow">
+        <property name="title">Pulp</property>
+        <property name="default-width">800</property>
+        <property name="default-height">500</property>
+        <child>
+            <object class="GtkBox">
+                <property name="visible">True</property>
+                <property name="orientation">horizontal</property>
+                <child>
+                    <object class="GtkFrame">
+                        <property name="visible">True</property>
+                        <property name="name">sidebar</property>
+                        <child>
+                            <object class="GtkBox">
+                                <property name="visible">True</property>
+                                <property name="orientation">vertical</property>
+                                <child>
+                                    <object class="GtkScrolledWindow">
+                                        <property name="visible">True</property>
+                                        <child>
+                                            <object class="GtkTreeView" id="sidebar_treeview">
+                                                <property name="visible">True</property>
+                                                <property name="model">sidebar_model</property>
+                                                <property name="headers-visible">False</property>
+                                                <property name="enable-search">False</property>
+                                                <property name="reorderable">True</property>
+                                                <child>
+                                                    <object class="GtkTreeViewColumn">
+                                                        <property name="title">File</property>
+                                                        <child>
+                                                            <object class="GtkCellRendererText">
+                                                                <property name="wrap-mode">word-char</property>
+                                                                <property name="wrap-width">150</property>
+                                                            </object>
+                                                            <attributes>
+                                                                <attribute name="text">0</attribute>
+                                                            </attributes>
+                                                        </child>
+                                                    </object>
+                                                </child>
+                                            </object>
+                                        </child>
+                                    </object>
+                                    <packing>
+                                        <property name="expand">True</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">0</property>
+                                    </packing>
+                                </child>
+                                <child>
+                                    <object class="GtkLabel">
+                                        <property name="visible">True</property>
+                                        <property name="name">separator-label</property>
+                                    </object>
+                                    <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">1</property>
+                                    </packing>
+                                </child>
+                                <child>
+                                    <object class="GtkStack" id="search_stack">
+                                        <property name="visible">True</property>
+                                        <child>
+                                            <object class="GtkSearchEntry">
+                                            </object>
+                                            <!-- <attributes> -->
+                                            <!--     <attribute name="name">-1</attribute> -->
+                                            <!-- </attributes> -->
+                                        </child>
+                                    </object>
+                                    <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">2</property>
+                                    </packing>
+                                </child>
+                                <!-- <child> -->
+                                <!--     <object class="GtkLabel"> -->
+                                <!--         <property name="visible">True</property> -->
+                                <!--         <property name="name">separator-label-two</property> -->
+                                <!--     </object> -->
+                                <!--     <packing> -->
+                                <!--         <property name="expand">False</property> -->
+                                <!--         <property name="fill">True</property> -->
+                                <!--         <property name="position">3</property> -->
+                                <!--     </packing> -->
+                                <!-- </child> -->
+                                <child>
+                                    <object class="GtkLabel" id="pages_label">
+                                        <property name="visible">True</property>
+                                        <property name="name">pages-label</property>
+                                    </object>
+                                    <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">3</property>
+                                    </packing>
+                                </child>
+                            </object>
+                        </child>
+                    </object>
+                    <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="position">0</property>
+                    </packing>
+                </child>
+                <child>
+                    <object class="GtkStack" id="stack">
+                        <property name="visible">True</property>
+                        <child>
+                            <object class="GtkLabel" id="nada">
+                                <property name="label"> </property>
+                            </object>
+                            <!-- <attributes> -->
+                            <!--     <attribute name="name">-1</attribute> -->
+                            <!-- </attributes> -->
+                        </child>
+                    </object>
+                    <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
+                        <property name="position">1</property>
+                    </packing>
+                </child>
+            </object>
+        </child>
+    </template>
+
+    <object class="GtkListStore" id="sidebar_model">
+        <columns>
+            <column type="gchararray"/>
+            <column type="gchararray"/>
+            <!-- <column type="GtkWidget"/> -->
+        </columns>
+    </object>
+
+</interface>

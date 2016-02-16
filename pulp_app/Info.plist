@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+
+    <key>CFBundlePackageType</key>               <string>APPL</string>
+    <key>CFBundleInfoDictionaryVersion</key>     <string>6.0</string>
+
+    <key>CFBundleName</key>                      <string>Pulp</string>
+    <key>CFBundleDisplayName</key>               <string>Pulp</string>
+    <key>CFBundleExecutable</key>                <string>pulp.exe</string>
+    <key>CFBundleIdentifier</key>                <string>github.roidocampo.pulp</string>
+
+    <key>CFBundleIconFile</key>                  <string>orange_slice.icns</string>
+
+    <key>CFBundleVersion</key>                   <string>0.1</string>
+    <key>CFBundleGetInfoString</key>             <string>0.1</string>
+    <key>CFBundleShortVersionString</key>        <string>0.1</string>
+
+    <key>CFBundleDocumentTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleTypeExtensions</key> <array><string>pdf</string></array>
+            <key>CFBundleTypeRole</key>       <string>Viewer</string>
+        </dict>
+        <dict>
+            <key>CFBundleTypeExtensions</key> <array><string>djvu</string></array>
+            <key>CFBundleTypeRole</key>       <string>Viewer</string>
+        </dict>
+        <dict>
+            <key>CFBundleTypeExtensions</key> <array><string>ps</string></array>
+            <key>CFBundleTypeRole</key>       <string>Viewer</string>
+        </dict>
+    </array>
+
+</dict>
+</plist>

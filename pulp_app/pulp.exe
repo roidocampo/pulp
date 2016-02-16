@@ -1,0 +1,60 @@
+#!/bin/bash
+
+exec 1> ~/.pulp_errors.log
+exec 2>&1
+
+real_path () {
+    TARGET_FILE=$1
+
+    cd `dirname $TARGET_FILE`
+    TARGET_FILE=`basename $TARGET_FILE`
+
+    # Iterate down a (possible) chain of symlinks
+    COUNTER=0
+    while [ -L "$TARGET_FILE" -a "$COUNTER" -lt 1000 ]
+    do
+        TARGET_FILE=`readlink $TARGET_FILE`
+        cd `dirname $TARGET_FILE`
+        TARGET_FILE=`basename $TARGET_FILE`
+        let COUNTER=COUNTER+1
+    done
+
+    if [ "$COUNTER" -lt 1000 ]
+    then
+        # Compute the canonicalized name by finding the physical path 
+        # for the directory we're in and appending the target file.
+        PHYS_DIR=`pwd -P`
+        RESULT=$PHYS_DIR/$TARGET_FILE
+        echo $RESULT
+    else
+        echo $1
+    fi
+}
+
+dir=$(real_path $0)
+dir=$(dirname ${dir})
+
+resources=$(dirname ${dir})
+resources=${resources}/Resources
+
+real_python="/usr/local/bin/python3"
+real_python=$(real_path "${real_python}")
+real_python=$(dirname "${real_python}")
+real_python=$(dirname "${real_python}")
+real_python=${real_python}/Resources/Python.app/Contents/MacOS/Python
+
+linked_python=${dir}/Python
+
+if [ "$(real_path "${linked_python}")" != "${real_python}" ]
+then
+    ln -f -s "$real_python" "$linked_python"
+fi
+
+cd "$HOME"
+
+export PYTHONPATH=${resources}
+export PYTHONUNBUFFERED=yes
+
+date
+
+exec "$linked_python" -m pulp_gtk
