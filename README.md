@@ -6,4 +6,5 @@ You can install it using homebrew:
 
 ```bash
 $ brew install roidocampo/personal/pulp
+$ brew linkapps pulp
 ```
