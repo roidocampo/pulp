@@ -146,6 +146,7 @@ class PulpWindow(Gtk.ApplicationWindow):
         add_simple_action("find", self.on_action_find)
         add_simple_action("find_next", self.on_action_find_next)
         add_simple_action("find_previous", self.on_action_find_previous)
+        add_simple_action("goto", self.on_action_goto)
         add_simple_action("go_next", self.on_action_go_next)
         add_simple_action("go_previous", self.on_action_go_previous)
         add_simple_action("bibtex", self.on_action_bibtex)
@@ -153,7 +154,7 @@ class PulpWindow(Gtk.ApplicationWindow):
         add_simple_action("quit", self.on_action_quit)
 
     def init_misc(self):
-        self.in_quit_dialog = False
+        self.in_dialog = False
         self.doc_views = {}
         self.open_count = 0
         self.in_search_entry_keypress = False
@@ -176,13 +177,13 @@ class PulpWindow(Gtk.ApplicationWindow):
     ####################################################################
 
     def on_action_quit(self, action, parameter):
-        if self.in_quit_dialog:
+        if self.in_dialog:
             return
         doc_view = self.get_current_doc_view()
         if doc_view is None:
             self.app.quit()
             return
-        self.in_quit_dialog = True
+        self.in_dialog = True
         dialog = Gtk.MessageDialog(self, 0, 
                                    Gtk.MessageType.WARNING,
                                    Gtk.ButtonsType.YES_NO, 
@@ -191,9 +192,48 @@ class PulpWindow(Gtk.ApplicationWindow):
             "There are several documents opened.")
         response = dialog.run()
         dialog.destroy()
-        self.in_quit_dialog = False
+        self.in_dialog = False
         if response == Gtk.ResponseType.YES:
             self.app.quit()
+
+    ####################################################################
+    # Go to page
+    ####################################################################
+
+    def on_action_goto(self, action, parameter):
+        if self.in_dialog:
+            return
+        doc_view = self.get_current_doc_view()
+        if doc_view is None:
+            return
+        self.in_dialog = True
+        dialog = Gtk.MessageDialog(self, 0, 
+                                   Gtk.MessageType.WARNING,
+                                   Gtk.ButtonsType.OK_CANCEL, 
+                                   "\nGo To Page")
+        dialog.format_secondary_text(
+            "Choose the page you want to go to:")
+        dialog.set_default_response(Gtk.ResponseType.OK)
+        box = dialog.get_message_area()
+        page_num = doc_view.model.get_page()+1
+        tot_pages = doc_view.model.get_document().get_n_pages()
+        adjust = Gtk.Adjustment(page_num,1,tot_pages+1,1,1,1)
+        spin = Gtk.SpinButton.new(adjust, 1, 0)
+        spin.set_value(page_num)
+        box.add(spin)
+        dialog.show_all()
+        def spin_activate(*args):
+            dialog.response(Gtk.ResponseType.OK)
+            dialog.close()
+        spin.connect("activate", spin_activate)
+        response = dialog.run()
+        new_page_num = spin.get_value()
+        dialog.destroy()
+        self.in_dialog = False
+        if response == Gtk.ResponseType.OK:
+            if page_num != new_page_num:
+                doc_view.model.set_page(new_page_num-1)
+                self.history_save(doc_view)
 
     ####################################################################
     # Fullscreen/Restore
@@ -417,8 +457,8 @@ class PulpWindow(Gtk.ApplicationWindow):
     
     def page_changed(self, *args):
         doc_view = args[-1]
-        page_num = doc_view.model.get_page()+1
-        tot_pages = doc_view.model.get_document().get_n_pages()
+        # page_num = doc_view.model.get_page()+1
+        # tot_pages = doc_view.model.get_document().get_n_pages()
         self.pages_label.set_text(
             "%s - Page %s of %s" % (
                 doc_view.mime_name,
@@ -438,6 +478,9 @@ class PulpWindow(Gtk.ApplicationWindow):
     ####################################################################
     
     def handle_link(self, widget, o, doc_view):
+        self.history_save(doc_view)
+
+    def history_save(self, doc_view):
         history = doc_view.history
         pos = doc_view.history_pos
         del history[pos+1:]
