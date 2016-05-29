@@ -264,9 +264,9 @@ class PulpWindow(Gtk.ApplicationWindow):
     # Open File
     ####################################################################
     
-    def open_file(self, file_path, orig_doc_view=None):
+    def open_file(self, file_path, orig_doc_view=None, at_end=False):
         doc_view = self.create_doc_view(file_path)
-        self.insert_in_sidebar(doc_view)
+        self.insert_in_sidebar(doc_view, at_end)
         self.sync(doc_view, orig_doc_view)
 
     def create_doc_view(self, path):
@@ -367,9 +367,9 @@ class PulpWindow(Gtk.ApplicationWindow):
         doc.load('file://' + safe_path)
         return doc, safe_path
 
-    def insert_in_sidebar(self, dv):
+    def insert_in_sidebar(self, dv, at_end=False):
         cursor, col = self.sidebar_treeview.get_cursor()
-        if cursor:
+        if (not at_end) and cursor:
             itr = self.sidebar_model.get_iter(cursor)
             itr = self.sidebar_model.insert_after(
                 itr, [dv.title, dv.name])
@@ -471,7 +471,17 @@ class PulpWindow(Gtk.ApplicationWindow):
     ####################################################################
     
     def external_link(self, widget, o):
-        webbrowser.open(o.get_uri())
+        link_type = o.get_action_type()
+        if link_type == EvinceDocument.LinkActionType.EXTERNAL_URI:
+            webbrowser.open(o.get_uri())
+        elif link_type == EvinceDocument.LinkActionType.LAUNCH:
+            filepath = o.get_filename()
+            if sys.platform.startswith('darwin'):
+                subprocess.call(('open', filepath))
+            elif os.name == 'nt':
+                os.startfile(filepath)
+            elif os.name == 'posix':
+                subprocess.call(('xdg-open', filepath))
 
     ####################################################################
     # Update history after internal link
@@ -661,7 +671,7 @@ class PulpWindow(Gtk.ApplicationWindow):
     def on_action_bibtex(self, *args):
         doc_view = self.get_current_doc_view()
         if doc_view:
-            bwin = bib_window.BibWindow(doc_view.orig_path)
+            bwin = bib_window.BibWindow(self.app, doc_view.orig_path)
             bwin.show()
 
     def load_bibtex(self, bibtex_container, doc_view):
@@ -775,7 +785,7 @@ class PulpApplication(Gtk.Application):
             window.show_all()
         for file in files:
             path = file.get_path()
-            window.open_file(path)
+            window.open_file(path, None, True)
         window.present()
 
     def do_open_mac(self, osx_app, path, *args):

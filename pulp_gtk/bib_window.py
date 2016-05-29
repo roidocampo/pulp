@@ -6,18 +6,32 @@ gi.require_version('Gtk', '3.0')
 
 from gi.repository import Gtk
 from gi.repository import Gdk
+from gi.repository import Gio
 from gi.repository import GLib
 from gi.repository import Pango
 
 from . import bib_fetcher
 
 
-class BibWindow(Gtk.Window):
+class BibWindow(Gtk.ApplicationWindow):
 
-    def __init__(self, path):
-        super().__init__()
+    def __init__(self, app, path):
+        super().__init__(application = app)
+        self.app = app
         self.path = path
+        self.init_ui()
+        self.init_actions()
 
+    def init_actions(self):
+        def add_simple_action(name, callback):
+            action = Gio.SimpleAction.new(name, None)
+            action.connect('activate', callback)
+            self.add_action(action)
+        add_simple_action("close", self.on_action_close)
+        # add_simple_action("copy", self.on_action_copy)
+        add_simple_action("quit", self.on_action_close)
+
+    def init_ui(self):
         # head = Gtk.HeaderBar()
         vbox = Gtk.VBox()
         pvbox = Gtk.VBox()
@@ -99,8 +113,9 @@ class BibWindow(Gtk.Window):
         personal.get_buffer().connect("modified-changed", self.mod_changed)
         save_button.connect("clicked", self.save_pbib)
         cancel_button.connect("clicked", self.reset_pbib)
-        self.connect('key-press-event', self.keypress)
-        self.connect('delete-event', self.on_close)
+
+        # self.connect('key-press-event', self.keypress)
+        # self.connect('delete-event', self.on_close)
 
     def load_cache(self, cache_bib, personal_bib):
         if cache_bib:
@@ -137,27 +152,36 @@ class BibWindow(Gtk.Window):
         self.personal.get_buffer().set_text(self.personal_bib)
         self.personal.get_buffer().set_modified(False)
 
-    def on_close(self, widget, event):
+    def on_action_close(self, *args):
         if self.personal_modified:
-            return True
+            pass
         else:
-            return False
+            self.close()
 
-    def keypress(self, widget, event):
-        keyname = Gdk.keyval_name(event.keyval)
-        ctrl = event.state & (
-                Gdk.ModifierType.CONTROL_MASK
-                | Gdk.ModifierType.MOD2_MASK)
+    def on_action_copy(self, *args):
+        pass
 
-        if (ctrl and (keyname == 'q' or keyname == 'w')) or keyname == 'Escape':
-            if not self.personal_modified:
-                self.close()
+    # def on_close(self, widget, event):
+    #     if self.personal_modified:
+    #         return True
+    #     else:
+    #         return False
 
-        elif ctrl and keyname == 's':
-            if self.personal_modified:
-                self.save_pbib(None)
+    # def keypress(self, widget, event):
+    #     keyname = Gdk.keyval_name(event.keyval)
+    #     ctrl = event.state & (
+    #             Gdk.ModifierType.CONTROL_MASK
+    #             | Gdk.ModifierType.MOD2_MASK)
 
-        elif ctrl and keyname == 'r':
-            if self.personal_modified:
-                self.reset_pbib(None)
+    #     if (ctrl and (keyname == 'q' or keyname == 'w')) or keyname == 'Escape':
+    #         if not self.personal_modified:
+    #             self.close()
+
+    #     elif ctrl and keyname == 's':
+    #         if self.personal_modified:
+    #             self.save_pbib(None)
+
+    #     elif ctrl and keyname == 'r':
+    #         if self.personal_modified:
+    #             self.reset_pbib(None)
 
