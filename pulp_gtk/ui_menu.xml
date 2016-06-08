@@ -95,6 +95,18 @@
         </section>
         <section>
             <item>
+                <attribute name="label">Move Tab Up</attribute>
+                <attribute name="action">win.move_tab_up</attribute>
+                <attribute name='accel'>&lt;Primary&gt;comma</attribute>
+            </item>
+            <item>
+                <attribute name="label">Move Tab Down</attribute>
+                <attribute name="action">win.move_tab_down</attribute>
+                <attribute name='accel'>&lt;Primary&gt;period</attribute>
+            </item>
+        </section>
+        <section>
+            <item>
                 <attribute name="label">BibTeX Information</attribute>
                 <attribute name="action">win.bibtex</attribute>
                 <attribute name='accel'>&lt;Primary&gt;I</attribute>

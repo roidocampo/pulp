@@ -219,6 +219,8 @@ class PulpWindow(Gtk.ApplicationWindow):
         add_simple_action("goto", self.on_action_goto)
         add_simple_action("go_next", self.on_action_go_next)
         add_simple_action("go_previous", self.on_action_go_previous)
+        add_simple_action("move_tab_up", self.on_action_move_tab_up)
+        add_simple_action("move_tab_down", self.on_action_move_tab_down)
         add_simple_action("bibtex", self.on_action_bibtex)
         add_simple_action("fullscreen", self.on_action_fullscreen)
         add_simple_action("quit", self.on_action_quit)
@@ -776,6 +778,26 @@ class PulpWindow(Gtk.ApplicationWindow):
                 doc_view.scroll.get_hadjustment().set_value(history[n-1][0])
                 doc_view.scroll.get_vadjustment().set_value(history[n-1][1])
                 doc_view.history_pos -= 1
+
+    ####################################################################
+    # Tab move actions
+    ####################################################################
+
+    def on_action_move_tab_up(self, *args):
+        cursor, col = self.sidebar_treeview.get_cursor()
+        if cursor:
+            itr = self.sidebar_model.get_iter(cursor)
+            prev_itr = self.sidebar_model.iter_previous(itr)
+            if prev_itr:
+                self.sidebar_model.move_before(itr, prev_itr)
+
+    def on_action_move_tab_down(self, *args):
+        cursor, col = self.sidebar_treeview.get_cursor()
+        if cursor:
+            itr = self.sidebar_model.get_iter(cursor)
+            next_itr = self.sidebar_model.iter_next(itr)
+            if next_itr:
+                self.sidebar_model.move_after(itr, next_itr)
 
     ####################################################################
     # BibTeX
