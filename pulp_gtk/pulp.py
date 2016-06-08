@@ -4,6 +4,7 @@
 # Libraries
 ########################################################################
 
+import ast
 import base64
 import collections
 import gi
@@ -77,6 +78,75 @@ tell application "{app}"
 end tell
 
 """
+
+########################################################################
+# Debug opened file descriptors
+########################################################################
+
+class FdsDebug:
+
+    instance = None
+
+    def __init__(self):
+        # Debugging disabled
+        return
+        self.fds = []
+        self.update_fds()
+        GLib.timeout_add(100, self.update_fds)
+        FdsDebug.instance = self
+
+    @classmethod
+    def log(cls, *args):
+        if cls.instance is not None:
+            print(*args)
+
+    def update_fds(self):
+        '''
+        return the number of open file descriptors for current process
+
+        .. warning: will only work on UNIX-like os-es.
+        '''
+        pid = os.getpid()
+        procs = subprocess.check_output( 
+            [ "lsof", '-w', '-Ffn', "-p", str( pid ) ] )
+
+        new_fds = []
+        detecting_name = False
+
+        for field in procs.split(b'\n'):
+            if not field:
+                continue
+            f_type, f_data = field[0:1], field[1:]
+            if f_type == b'f' and f_data.isdigit():
+                new_fds.append([int(f_data), "???"])
+                detecting_name = True
+            elif detecting_name and f_type == b'n':
+                name_literal = f_data.decode("utf-8")
+                name_literal.replace('"', '\\"')
+                name_literal = 'b"' + name_literal + '"'
+                name = ast.literal_eval(name_literal)
+                name = name.decode("utf-8")
+                new_fds[-1][-1] = name
+            else:
+                detecting_name = False
+
+        fd_closed = []
+        fd_opened = []
+        for fd in self.fds:
+            if fd not in new_fds:
+                fd_closed.append(fd)
+        for fd in new_fds:
+            if fd not in self.fds:
+                fd_opened.append(fd)
+        if fd_closed:
+            fd_closed = " ".join(map(lambda x: str(x[0]), fd_closed))
+            print("- %s" % (fd_closed))
+        if fd_opened:
+            for fd, fd_name in fd_opened:
+                print("+ %s %s" % (fd, repr(fd_name.encode('utf-8'))))
+
+        self.fds = new_fds
+        return True
 
 ########################################################################
 # PulpWindow Class
@@ -265,6 +335,7 @@ class PulpWindow(Gtk.ApplicationWindow):
     ####################################################################
     
     def open_file(self, file_path, orig_doc_view=None, at_end=False):
+        FdsDebug.log("OPEN", repr(file_path.encode('utf-8')))
         doc_view = self.create_doc_view(file_path)
         self.insert_in_sidebar(doc_view, at_end)
         self.sync(doc_view, orig_doc_view)
@@ -414,12 +485,54 @@ class PulpWindow(Gtk.ApplicationWindow):
             self.sidebar_model.remove(itr)
             if name in self.doc_views:
                 doc_view = self.doc_views[name]
+                FdsDebug.log("CLOSE", repr(doc_view.path.encode("utf-8")))
+                if self.check_doc_view_path_is_unique(doc_view):
+                    self.close_file_descriptor(doc_view.path)
                 self.stack.remove(doc_view.view)
                 del self.doc_views[name]
                 if not self.doc_views:
                     self.stack.set_visible_child(self.nada)
                     self.pages_label.set_text('')
         self.sidebar_selection_changed()
+
+    def check_doc_view_path_is_unique(self, doc_view):
+        count = 0
+        for other_view in self.doc_views.values():
+            if other_view.path == doc_view.path:
+                count += 1
+        if count == 1:
+            return True
+        else:
+            return False
+
+    def close_file_descriptor(self, path):
+        pid = os.getpid()
+        procs = subprocess.check_output( 
+            [ "lsof", '-w', '-Ffn', "-p", str( pid ) ] )
+
+        fds = []
+        detecting_name = False
+
+        for field in procs.split(b'\n'):
+            if not field:
+                continue
+            f_type, f_data = field[0:1], field[1:]
+            if f_type == b'f' and f_data.isdigit():
+                fds.append([int(f_data), "???"])
+                detecting_name = True
+            elif detecting_name and f_type == b'n':
+                name_literal = f_data.decode("utf-8")
+                name_literal.replace('"', '\\"')
+                name_literal = 'b"' + name_literal + '"'
+                name = ast.literal_eval(name_literal)
+                name = name.decode("utf-8")
+                fds[-1][-1] = name
+            else:
+                detecting_name = False
+
+        for fd, name in fds:
+            if name==path:
+                os.close(fd)
 
     ####################################################################
     # Get current doc_view
@@ -731,6 +844,7 @@ class PulpApplication(Gtk.Application):
         self.setup_menu()
         # self.setup_actions()
         self.setup_tempdir()
+        self._fds_debug = FdsDebug()
 
     def setup_css(self):
         css_data = Resource.string("style.css")
