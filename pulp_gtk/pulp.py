@@ -442,7 +442,9 @@ class PulpWindow(Gtk.ApplicationWindow):
         safe_path = os.path.join(self.tempdir, safe_path)
         if mime == 'application/x-dvi':
             if orig_doc_view is None:
-                subprocess.call(('dvipdf', path, safe_path))
+                env = os.environ.copy()
+                env['PATH'] = '/usr/local/bin:' + env['PATH'] + ':/Library/TeX/texbin'
+                subprocess.call(('dvipdf', path, safe_path), env=env)
             else:
                 os.symlink(orig_doc_view.path, safe_path)
             mime = 'application/pdf'
