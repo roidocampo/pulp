@@ -15,6 +15,7 @@ import re
 import shutil
 import subprocess
 import sys
+import time
 import tempfile
 import webbrowser
 
@@ -338,14 +339,14 @@ class PulpWindow(Gtk.ApplicationWindow):
     
     def open_file(self, file_path, orig_doc_view=None, at_end=False):
         FdsDebug.log("OPEN", repr(file_path.encode('utf-8')))
-        doc_view = self.create_doc_view(file_path)
+        doc_view = self.create_doc_view(file_path, orig_doc_view)
         self.insert_in_sidebar(doc_view, at_end)
         self.sync(doc_view, orig_doc_view)
 
-    def create_doc_view(self, path):
+    def create_doc_view(self, path, orig_doc_view=None):
         orig_path = path
         name, title, mime, mime_name, bib_path = self.process_path(path)
-        doc, path = self.load_doc(mime, path)
+        doc, path = self.load_doc(mime, path, orig_doc_view)
 
         box = Gtk.Box()
         scroll = Gtk.ScrolledWindow()
@@ -420,12 +421,15 @@ class PulpWindow(Gtk.ApplicationWindow):
         elif ext == ".ps":
             mime = 'application/postscript'
             mime_name = "PS"
+        elif ext == ".dvi":
+            mime = 'application/x-dvi'
+            mime_name = "DVI"
         else:
             mime = 'application/pdf'
             mime_name = "PDF"
         return name, title, mime, mime_name, bib_path
 
-    def load_doc(self, mime, path):
+    def load_doc(self, mime, path, orig_doc_view=None):
         if mime != 'image/vnd.djvu':
             try:
                 doc = EvinceDocument.backends_manager_get_document(mime)
@@ -433,10 +437,18 @@ class PulpWindow(Gtk.ApplicationWindow):
                 return doc, path
             except:
                 pass
-        doc = EvinceDocument.backends_manager_get_document(mime)
         safe_path = ''.join([random.choice("abcdefghijklmnopqrstuvwxyz") for _ in range(8)])
+        safe_path += str(int(time.time()*1000000)) + "z"
         safe_path = os.path.join(self.tempdir, safe_path)
-        os.symlink(path, safe_path)
+        if mime == 'application/x-dvi':
+            if orig_doc_view is None:
+                subprocess.call(('dvipdf', path, safe_path))
+            else:
+                os.symlink(orig_doc_view.path, safe_path)
+            mime = 'application/pdf'
+        else:
+            os.symlink(path, safe_path)
+        doc = EvinceDocument.backends_manager_get_document(mime)
         doc.load('file://' + safe_path)
         return doc, safe_path
 

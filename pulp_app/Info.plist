@@ -31,6 +31,10 @@
             <key>CFBundleTypeExtensions</key> <array><string>ps</string></array>
             <key>CFBundleTypeRole</key>       <string>Viewer</string>
         </dict>
+        <dict>
+            <key>CFBundleTypeExtensions</key> <array><string>dvi</string></array>
+            <key>CFBundleTypeRole</key>       <string>Viewer</string>
+        </dict>
     </array>
 
 </dict>
