@@ -114,7 +114,13 @@
         </section>
         <section>
             <item>
-                <attribute name="label">Toggle full screen</attribute>
+                <attribute name="label">Toggle Single Page View</attribute>
+                <attribute name="action">win.single_page</attribute>
+            </item>
+        </section>
+        <section>
+            <item>
+                <attribute name="label">Toggle Full Screen</attribute>
                 <attribute name="action">win.fullscreen</attribute>
                 <attribute name='accel'>&lt;Primary&gt;Y</attribute>
             </item>

@@ -223,6 +223,7 @@ class PulpWindow(Gtk.ApplicationWindow):
         add_simple_action("move_tab_up", self.on_action_move_tab_up)
         add_simple_action("move_tab_down", self.on_action_move_tab_down)
         add_simple_action("bibtex", self.on_action_bibtex)
+        add_simple_action("single_page", self.on_action_single_page)
         add_simple_action("fullscreen", self.on_action_fullscreen)
         add_simple_action("quit", self.on_action_quit)
 
@@ -396,7 +397,7 @@ class PulpWindow(Gtk.ApplicationWindow):
         view.connect("handle-link", self.handle_link, doc_view)
         view.connect("external-link", self.external_link)
         model.connect("page-changed", self.page_changed, doc_view)
-        # search_entry.connect('key-press-event', self.keypress_search_entry)
+        view.connect('key-press-event', self.keypress_view)
         search_entry.connect('search-changed', self.search_changed, doc_view)
         search_entry.connect('stop-search', self.on_action_find_clear)
         bibtex_container.connect('show', self.load_bibtex, doc_view)
@@ -768,6 +769,35 @@ class PulpWindow(Gtk.ApplicationWindow):
         doc_view = self.get_current_doc_view()
         if doc_view:
             doc_view.model.set_sizing_mode(EvinceView.SizingMode.FIT_PAGE)
+
+    ####################################################################
+    # Single page action
+    ####################################################################
+
+    def on_action_single_page(self, *args):
+        doc_view = self.get_current_doc_view()
+        if doc_view:
+            if doc_view.model.get_continuous():
+                doc_view.model.set_continuous(False)
+            else:
+                doc_view.model.set_continuous(True)
+
+    def keypress_view(self, widget, ev, *args):
+        if ev.keyval in [Gdk.KEY_Up, Gdk.KEY_Down, Gdk.KEY_End, Gdk.KEY_Home]:
+            doc_view = self.get_current_doc_view()
+            if doc_view:
+                if not doc_view.model.get_continuous():
+                    if ev.keyval == Gdk.KEY_Up:
+                        doc_view.view.previous_page()
+                    elif ev.keyval == Gdk.KEY_Down:
+                        doc_view.view.next_page()
+                    elif ev.keyval == Gdk.KEY_End:
+                        last = doc_view.doc.get_n_pages()
+                        doc_view.model.set_page(last-1)
+                    elif ev.keyval == Gdk.KEY_Home:
+                        doc_view.model.set_page(0)
+                    return True
+        return False
 
     ####################################################################
     # History actions
