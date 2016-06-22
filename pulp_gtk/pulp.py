@@ -35,6 +35,7 @@ from gi.repository import EvinceView
 
 from . import bib_fetcher
 from . import bib_window
+from . import pulp_server
 
 
 ########################################################################
@@ -940,11 +941,15 @@ class PulpApplication(Gtk.Application):
 
     def do_startup(self, *args):
         Gtk.Application.do_startup(self)
+        self.start_server()
         self.setup_css()
         self.setup_menu()
         # self.setup_actions()
         self.setup_tempdir()
         self._fds_debug = FdsDebug()
+
+    def start_server(self):
+        self.server_proc = pulp_server.start_pulp_server()
 
     def setup_css(self):
         css_data = Resource.string("style.css")
