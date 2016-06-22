@@ -47,3 +47,6 @@ ${TARGET_MODULE_DIR}/%: ${MODULE_DIR}/%
 
 clean:
 	-rm -r ${BUILD_DIR}
+
+.PHONY: default echo_targets clean
+
