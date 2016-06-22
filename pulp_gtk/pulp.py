@@ -206,6 +206,7 @@ class PulpWindow(Gtk.ApplicationWindow):
             self.add_action(action)
         add_simple_action("duplicate", self.on_action_duplicate)
         add_simple_action("close", self.on_action_close)
+        add_simple_action("undo_close", self.on_action_undo_close)
         add_simple_action("preview", self.on_action_preview)
         add_simple_action("print", self.on_action_print)
         add_simple_action("copy", self.on_action_copy)
@@ -230,6 +231,7 @@ class PulpWindow(Gtk.ApplicationWindow):
     def init_misc(self):
         self.in_dialog = False
         self.doc_views = {}
+        self.close_history = []
         self.open_count = 0
         self.in_search_entry_keypress = False
         self.tempdir = self.app.tempdir
@@ -469,13 +471,22 @@ class PulpWindow(Gtk.ApplicationWindow):
 
     def sync(self, doc_view, orig_doc_view):
         if orig_doc_view is not None:
-            doc_view.model.set_sizing_mode(
-                orig_doc_view.model.get_sizing_mode())
-            doc_view.model.set_scale(
-                orig_doc_view.model.get_scale())
-            place=(
-               orig_doc_view.scroll.get_hadjustment().get_value(),
-               orig_doc_view.scroll.get_vadjustment().get_value())
+            if 'sync_data' in orig_doc_view:
+                doc_view.model.set_sizing_mode(
+                    orig_doc_view.sync_data.sizing_mode)
+                doc_view.model.set_scale(
+                    orig_doc_view.sync_data.scale)
+                place=(
+                   orig_doc_view.sync_data.hadjustment,
+                   orig_doc_view.sync_data.vadjustment)
+            else:
+                doc_view.model.set_sizing_mode(
+                    orig_doc_view.model.get_sizing_mode())
+                doc_view.model.set_scale(
+                    orig_doc_view.model.get_scale())
+                place=(
+                   orig_doc_view.scroll.get_hadjustment().get_value(),
+                   orig_doc_view.scroll.get_vadjustment().get_value())
             def later(*args):
                 if doc_view.view.is_loading():
                     return True
@@ -502,6 +513,7 @@ class PulpWindow(Gtk.ApplicationWindow):
             self.sidebar_model.remove(itr)
             if name in self.doc_views:
                 doc_view = self.doc_views[name]
+                self.create_close_history_item(doc_view)
                 FdsDebug.log("CLOSE", repr(doc_view.path.encode("utf-8")))
                 if self.check_doc_view_path_is_unique(doc_view):
                     self.close_file_descriptor(doc_view.path)
@@ -511,6 +523,19 @@ class PulpWindow(Gtk.ApplicationWindow):
                     self.stack.set_visible_child(self.nada)
                     self.pages_label.set_text('')
         self.sidebar_selection_changed()
+
+    def create_close_history_item(self, doc_view):
+        hi = AttrDict(
+            orig_path = doc_view.orig_path,
+            path = doc_view.path,
+            sync_data = AttrDict(
+                sizing_mode = doc_view.model.get_sizing_mode(),
+                scale = doc_view.model.get_scale(),
+                hadjustment = doc_view.scroll.get_hadjustment().get_value(),
+                vadjustment = doc_view.scroll.get_vadjustment().get_value()
+            )
+        )
+        self.close_history.append(hi)
 
     def check_doc_view_path_is_unique(self, doc_view):
         count = 0
@@ -550,6 +575,15 @@ class PulpWindow(Gtk.ApplicationWindow):
         for fd, name in fds:
             if name==path:
                 os.close(fd)
+
+    ####################################################################
+    # Undo close document
+    ####################################################################
+    
+    def on_action_undo_close(self, *args):
+        if self.close_history:
+            hi = self.close_history.pop()
+            self.open_file(hi.orig_path, hi)
 
     ####################################################################
     # Get current doc_view

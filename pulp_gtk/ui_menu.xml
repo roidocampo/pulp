@@ -22,6 +22,11 @@
                 <attribute name="action">win.close</attribute>
                 <attribute name='accel'>&lt;Primary&gt;W</attribute>
             </item>
+            <item>
+                <attribute name="label">Undo Close</attribute>
+                <attribute name="action">win.undo_close</attribute>
+                <attribute name='accel'>&lt;Primary&gt;&lt;Shift&gt;T</attribute>
+            </item>
         </section>
         <section>
             <item>
