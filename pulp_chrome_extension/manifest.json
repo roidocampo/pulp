@@ -11,6 +11,12 @@
         "http://arxiv.org/abs/*"
       ],
       "js": ["jquery-3.0.0.min.js", "content.js"]
+    },
+    {
+      "matches": [
+        "https://arxiv.org/abs/*"
+      ],
+      "js": ["content_https.js"]
     }
   ]
 }
