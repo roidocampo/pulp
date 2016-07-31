@@ -24,7 +24,7 @@
             </item>
             <item>
                 <attribute name="label">Undo Close</attribute>
-                <attribute name="action">win.undo_close</attribute>
+                <attribute name="action">win.undoclose</attribute>
                 <attribute name='accel'>&lt;Primary&gt;&lt;Shift&gt;T</attribute>
             </item>
         </section>
@@ -38,27 +38,27 @@
         <section>
             <item>
                 <attribute name="label">Zoom In</attribute>
-                <attribute name="action">win.zoom_in</attribute>
+                <attribute name="action">win.zoomin</attribute>
                 <attribute name='accel'>equal</attribute>
             </item>
             <item>
                 <attribute name="label">Zoom Out</attribute>
-                <attribute name="action">win.zoom_out</attribute>
+                <attribute name="action">win.zoomout</attribute>
                 <attribute name='accel'>minus</attribute>
             </item>
             <item>
                 <attribute name="label">Zoom 100%</attribute>
-                <attribute name="action">win.zoom_100</attribute>
+                <attribute name="action">win.zoom100</attribute>
                 <attribute name='accel'>&lt;Primary&gt;1</attribute>
             </item>
             <item>
                 <attribute name="label">Zoom Fit Width</attribute>
-                <attribute name="action">win.zoom_fit_width</attribute>
+                <attribute name="action">win.zoomfitwidth</attribute>
                 <attribute name='accel'>&lt;Primary&gt;0</attribute>
             </item>
             <item>
                 <attribute name="label">Zoom Fit Page</attribute>
-                <attribute name="action">win.zoom_fit_page</attribute>
+                <attribute name="action">win.zoomfitpage</attribute>
                 <attribute name='accel'>&lt;Primary&gt;o</attribute>
             </item>
         </section>
@@ -72,12 +72,12 @@
         <section>
             <item>
                 <attribute name="label">Go Next</attribute>
-                <attribute name="action">win.go_next</attribute>
+                <attribute name="action">win.gonext</attribute>
                 <attribute name='accel'>&lt;Primary&gt;bracketright</attribute>
             </item>
             <item>
                 <attribute name="label">Go Previous</attribute>
-                <attribute name="action">win.go_previous</attribute>
+                <attribute name="action">win.goprevious</attribute>
                 <attribute name='accel'>&lt;Primary&gt;bracketleft</attribute>
             </item>
         </section>
@@ -89,24 +89,24 @@
             </item>
             <item>
                 <attribute name="label">Find Next</attribute>
-                <attribute name="action">win.find_next</attribute>
+                <attribute name="action">win.findnext</attribute>
                 <attribute name='accel'>&lt;Primary&gt;G</attribute>
             </item>
             <item>
                 <attribute name="label">Find Previous</attribute>
-                <attribute name="action">win.find_previous</attribute>
+                <attribute name="action">win.findprevious</attribute>
                 <attribute name='accel'>&lt;Primary&gt;&lt;Shift&gt;G</attribute>
             </item>
         </section>
         <section>
             <item>
                 <attribute name="label">Move Tab Up</attribute>
-                <attribute name="action">win.move_tab_up</attribute>
+                <attribute name="action">win.movetabup</attribute>
                 <attribute name='accel'>&lt;Primary&gt;comma</attribute>
             </item>
             <item>
                 <attribute name="label">Move Tab Down</attribute>
-                <attribute name="action">win.move_tab_down</attribute>
+                <attribute name="action">win.movetabdown</attribute>
                 <attribute name='accel'>&lt;Primary&gt;period</attribute>
             </item>
         </section>
@@ -120,7 +120,7 @@
         <section>
             <item>
                 <attribute name="label">Toggle Single Page View</attribute>
-                <attribute name="action">win.single_page</attribute>
+                <attribute name="action">win.singlepage</attribute>
             </item>
         </section>
         <section>

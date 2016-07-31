@@ -207,25 +207,25 @@ class PulpWindow(Gtk.ApplicationWindow):
             self.add_action(action)
         add_simple_action("duplicate", self.on_action_duplicate)
         add_simple_action("close", self.on_action_close)
-        add_simple_action("undo_close", self.on_action_undo_close)
+        add_simple_action("undoclose", self.on_action_undo_close)
         add_simple_action("preview", self.on_action_preview)
         add_simple_action("print", self.on_action_print)
         add_simple_action("copy", self.on_action_copy)
-        add_simple_action("zoom_in", self.on_action_zoom_in)
-        add_simple_action("zoom_out", self.on_action_zoom_out)
-        add_simple_action("zoom_100", self.on_action_zoom_100)
-        add_simple_action("zoom_fit_width", self.on_action_zoom_fit_width)
-        add_simple_action("zoom_fit_page", self.on_action_zoom_fit_page)
+        add_simple_action("zoomin", self.on_action_zoom_in)
+        add_simple_action("zoomout", self.on_action_zoom_out)
+        add_simple_action("zoom100", self.on_action_zoom_100)
+        add_simple_action("zoomfitwidth", self.on_action_zoom_fit_width)
+        add_simple_action("zoomfitpage", self.on_action_zoom_fit_page)
         add_simple_action("find", self.on_action_find)
-        add_simple_action("find_next", self.on_action_find_next)
-        add_simple_action("find_previous", self.on_action_find_previous)
+        add_simple_action("findnext", self.on_action_find_next)
+        add_simple_action("findprevious", self.on_action_find_previous)
         add_simple_action("goto", self.on_action_goto)
-        add_simple_action("go_next", self.on_action_go_next)
-        add_simple_action("go_previous", self.on_action_go_previous)
-        add_simple_action("move_tab_up", self.on_action_move_tab_up)
-        add_simple_action("move_tab_down", self.on_action_move_tab_down)
+        add_simple_action("gonext", self.on_action_go_next)
+        add_simple_action("goprevious", self.on_action_go_previous)
+        add_simple_action("movetabup", self.on_action_move_tab_up)
+        add_simple_action("movetabdown", self.on_action_move_tab_down)
         add_simple_action("bibtex", self.on_action_bibtex)
-        add_simple_action("single_page", self.on_action_single_page)
+        add_simple_action("singlepage", self.on_action_single_page)
         add_simple_action("fullscreen", self.on_action_fullscreen)
         add_simple_action("quit", self.on_action_quit)
 
@@ -357,38 +357,38 @@ class PulpWindow(Gtk.ApplicationWindow):
         view = EvinceView.View()
         model = EvinceView.DocumentModel()
         search_entry = Gtk.SearchEntry()
-        bibtex_container = Gtk.Frame()
-        bibtex_box = Gtk.Box.new(Gtk.Orientation.VERTICAL, 0)
-        bibtex_scroll = Gtk.ScrolledWindow()
-        bibtex_text = Gtk.TextView()
-        bibtex_flow = Gtk.FlowBox()
-        bibtex_space = Gtk.Label("")
-        # bibtex_button = Gtk.Button.new_with_label("Edit")
+        # bibtex_container = Gtk.Frame()
+        # bibtex_box = Gtk.Box.new(Gtk.Orientation.VERTICAL, 0)
+        # bibtex_scroll = Gtk.ScrolledWindow()
+        # bibtex_text = Gtk.TextView()
+        # bibtex_flow = Gtk.FlowBox()
+        # bibtex_space = Gtk.Label("")
+        # # bibtex_button = Gtk.Button.new_with_label("Edit")
 
         model.set_document(doc)
         view.set_model(model)
         scroll.add(view)
-        bibtex_scroll.add(bibtex_text)
-        # bibtex_flow.add(bibtex_button)
-        bibtex_box.pack_start(bibtex_flow, False, True, 0)
-        bibtex_box.pack_start(bibtex_space, False, True, 0)
-        bibtex_box.pack_start(bibtex_scroll, True, True, 0)
-        bibtex_container.add(bibtex_box)
+        # bibtex_scroll.add(bibtex_text)
+        # # bibtex_flow.add(bibtex_button)
+        # bibtex_box.pack_start(bibtex_flow, False, True, 0)
+        # bibtex_box.pack_start(bibtex_space, False, True, 0)
+        # bibtex_box.pack_start(bibtex_scroll, True, True, 0)
+        # bibtex_container.add(bibtex_box)
         box.pack_start(scroll, True, True, 0)
-        box.pack_start(bibtex_container, True, True, 0)
+        # box.pack_start(bibtex_container, True, True, 0)
         self.search_stack.add_named(search_entry, name)
         self.stack.add_titled(box, name, title)
 
         view.find_set_highlight_search(True)
-        bibtex_text.set_monospace(True)
-        bibtex_text.set_editable(False)
-        bibtex_text.get_buffer().set_text("Loading BibTeX...")
-        bibtex_container.get_style_context().add_class("bibtex-container")
+        # bibtex_text.set_monospace(True)
+        # bibtex_text.set_editable(False)
+        # bibtex_text.get_buffer().set_text("Loading BibTeX...")
+        # bibtex_container.get_style_context().add_class("bibtex-container")
 
         doc_view = AttrDict(
             view=view, model=model, doc=doc, box=box, 
-            bibtex_container=bibtex_container,
-            bibtex_text=bibtex_text, # bibtex_button=bibtex_button,
+            # bibtex_container=bibtex_container,
+            # bibtex_text=bibtex_text, # bibtex_button=bibtex_button,
             scroll=scroll, search_entry=search_entry,
             name=name, title=title, path=path, orig_path=orig_path,
             mime=mime, mime_name=mime_name,
@@ -403,11 +403,11 @@ class PulpWindow(Gtk.ApplicationWindow):
         view.connect('key-press-event', self.keypress_view)
         search_entry.connect('search-changed', self.search_changed, doc_view)
         search_entry.connect('stop-search', self.on_action_find_clear)
-        bibtex_container.connect('show', self.load_bibtex, doc_view)
+        # bibtex_container.connect('show', self.load_bibtex, doc_view)
 
         search_entry.show()
         box.show()
-        bibtex_box.show_all()
+        # bibtex_box.show_all()
         scroll.show_all()
 
         return doc_view
@@ -888,37 +888,37 @@ class PulpWindow(Gtk.ApplicationWindow):
             bwin = bib_window.BibWindow(self.app, doc_view.orig_path)
             bwin.show()
 
-    def load_bibtex(self, bibtex_container, doc_view):
-        doc_view.bib_fetcher.async_get_bibtex(
-            self.load_bibtex_cb, bibtex_container, doc_view)
+    # def load_bibtex(self, bibtex_container, doc_view):
+    #     doc_view.bib_fetcher.async_get_bibtex(
+    #         self.load_bibtex_cb, bibtex_container, doc_view)
 
-    def load_bibtex_cb(self, bibtex, original_bibtex, bibtex_container, doc_view):
-        #bibtex64 = self.load_bibtex64(doc_view)
-        print(bibtex)
-        print(original_bibtex)
-        bibtex64 = (original_bibtex + "\n" + bibtex)
-        if bibtex64:
-            doc_view.bibtex_text.get_buffer().set_text(bibtex64)
-        elif os.path.exists(doc_view.bib_path):
-            with open(doc_view.bib_path) as bib:
-                content = bib.read()
-            doc_view.bibtex_text.get_buffer().set_text(content)
-        else:
-            doc_view.bibtex_text.get_buffer().set_text(
-                "No BibTeX found.\n" + doc_view.bib_path)
-        # doc_view.bibtex_button.grab_focus()
+    # def load_bibtex_cb(self, bibtex, original_bibtex, bibtex_container, doc_view):
+    #     #bibtex64 = self.load_bibtex64(doc_view)
+    #     print(bibtex)
+    #     print(original_bibtex)
+    #     bibtex64 = (original_bibtex + "\n" + bibtex)
+    #     if bibtex64:
+    #         doc_view.bibtex_text.get_buffer().set_text(bibtex64)
+    #     elif os.path.exists(doc_view.bib_path):
+    #         with open(doc_view.bib_path) as bib:
+    #             content = bib.read()
+    #         doc_view.bibtex_text.get_buffer().set_text(content)
+    #     else:
+    #         doc_view.bibtex_text.get_buffer().set_text(
+    #             "No BibTeX found.\n" + doc_view.bib_path)
+    #     # doc_view.bibtex_button.grab_focus()
 
-    re_bibtex64 = re.compile(r"^%\s*BIBTEX64:(.*)$")
-    def load_bibtex64(self, doc_view):
-        b64 = None
-        with open(doc_view.path) as doc_file:
-            for line in reversed(doc_file.readlines()):
-                m = self.re_bibtex64.match(line)
-                if m:
-                    b64 = m.group(1)
-                    break
-        if b64:
-            return base64.b64decode(b64)
+    # re_bibtex64 = re.compile(r"^%\s*BIBTEX64:(.*)$")
+    # def load_bibtex64(self, doc_view):
+    #     b64 = None
+    #     with open(doc_view.path) as doc_file:
+    #         for line in reversed(doc_file.readlines()):
+    #             m = self.re_bibtex64.match(line)
+    #             if m:
+    #                 b64 = m.group(1)
+    #                 break
+    #     if b64:
+    #         return base64.b64decode(b64)
 
 
 

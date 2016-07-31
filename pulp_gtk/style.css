@@ -1,72 +1,41 @@
-/*
-GtkInfoBar {
-    background-color: #A0BACE;
-    color: black;
-    border-top: 1px solid black;
-    text-shadow: none;
+/***********************************************************************
+ * Style for the main window (mainly the sidebar)
+ **********************************************************************/
+
+#pulp-sidebar {
+    background-color : #A0BACE;
+    padding          : 10px;
+    border-right     : 1px solid black;
+    border-top       : none;
+    border-bottom    : none;
+    border-left      : none;
 }
 
-GtkInfoBar GtkButton {
-    padding: 0;
-    background: none;
-    color: navy;
-    border-color: rgba(0,0,0,0);
-    box-shadow: none;
-    text-shadow: none;
+#pulp-sidebar treeview {
+    padding          : 5px;
+    border-bottom    : 1px solid #555;
+    color            : #728E9D;
+    background-color : #A0BACE;
 }
 
-GtkInfoBar GtkButton:hover {
-    border-color: navy;
-}
-*/
-
-#sidebar {
-    background-color: #A0BACE;
-    padding: 10px;
-    border-right-color: black;
-    border-top: none;
-    border-bottom: none;
-    border-left: none;
+#pulp-sidebar treeview:selected {
+    background-color : #A0BACE;
+    color            : black;
 }
 
-.bibtex-container {
-    padding: 10px;
-    border-left-color: black;
-    border-top: none;
-    border-bottom: none;
-    border-right: none;
+#pulp-sidebar entry {
+    border : 1px solid black;
 }
 
-.bibtex-container GtkTextView {
-    padding: 5px;
-    background-color: rgba(0,0,0,0);
-    /* font-size: large; */
+#pages-label, 
+#separator-label {
+    background-color : #A0BACE;
+    padding-top      : 15px;
 }
 
-.bibtex-container GtkTextView:selected {
-    background-color: #4A90D9;
-}
-
-#pages-label, #separator-label {
-    background-color: #A0BACE;
-    padding-top: 15px;
-}
-
-#sidebar GtkTreeView {
-    padding: 5px;
-    border-bottom: 1px solid #555;
-    color: #728E9D;
-    background-color: #A0BACE;
-}
-
-#sidebar GtkTreeView:Selected {
-    background-color: #A0BACE;
-    color: black;
-}
-
-#sidebar GtkSearchEntry {
-    border: 1px solid black;
-}
+/***********************************************************************
+ * Style for the bibtex window
+ **********************************************************************/
 
 .bib-window .outer-frame {
     padding: 10px;
@@ -81,7 +50,7 @@ GtkInfoBar GtkButton:hover {
     padding-left: 5px;
 }
 
-.bib-window GtkTextView {
+.bib-window textview {
     padding: 3px;
 }
 
@@ -94,13 +63,16 @@ GtkInfoBar GtkButton:hover {
     padding-bottom: 3px;
 }
 
-.bib-window .modified {
+.bib-window .modified,
+.bib-window .modified text {
     background-color: #FCF5E4;
 }
 
-.bib-window .modified:selected {
+/*
+.bib-window .modified:selected text {
     background-color: #4A90D9;
 }
+*/
 
 .bib-window .save-bar {
     padding-top: 5px;

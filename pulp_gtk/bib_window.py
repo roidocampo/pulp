@@ -78,6 +78,12 @@ class BibWindow(Gtk.ApplicationWindow):
         self.resize(1350, 820)
         pframe_outer.set_size_request(500,-1)
 
+        pframe_outer.set_shadow_type(Gtk.ShadowType.NONE)
+        oframe_outer.set_shadow_type(Gtk.ShadowType.NONE)
+        pframe_inner.set_shadow_type(Gtk.ShadowType.NONE)
+        oframe_inner.set_shadow_type(Gtk.ShadowType.NONE)
+        paction_bar.set_shadow_type(Gtk.ShadowType.NONE)
+
         personal.override_font( Pango.font_description_from_string('Menlo Regular 13'))
         online.override_font( Pango.font_description_from_string('Menlo Regular 13'))
 

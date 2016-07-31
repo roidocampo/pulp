@@ -12,7 +12,9 @@
                 <child>
                     <object class="GtkFrame">
                         <property name="visible">True</property>
-                        <property name="name">sidebar</property>
+                        <property name="name">pulp-sidebar</property>
+                        <property name="can_focus">False</property>
+                        <property name="shadow_type">none</property>
                         <child>
                             <object class="GtkBox">
                                 <property name="visible">True</property>
@@ -67,9 +69,6 @@
                                         <child>
                                             <object class="GtkSearchEntry">
                                             </object>
-                                            <!-- <attributes> -->
-                                            <!--     <attribute name="name">-1</attribute> -->
-                                            <!-- </attributes> -->
                                         </child>
                                     </object>
                                     <packing>
@@ -78,17 +77,6 @@
                                         <property name="position">2</property>
                                     </packing>
                                 </child>
-                                <!-- <child> -->
-                                <!--     <object class="GtkLabel"> -->
-                                <!--         <property name="visible">True</property> -->
-                                <!--         <property name="name">separator-label-two</property> -->
-                                <!--     </object> -->
-                                <!--     <packing> -->
-                                <!--         <property name="expand">False</property> -->
-                                <!--         <property name="fill">True</property> -->
-                                <!--         <property name="position">3</property> -->
-                                <!--     </packing> -->
-                                <!-- </child> -->
                                 <child>
                                     <object class="GtkLabel" id="pages_label">
                                         <property name="visible">True</property>
@@ -116,9 +104,6 @@
                             <object class="GtkLabel" id="nada">
                                 <property name="label"> </property>
                             </object>
-                            <!-- <attributes> -->
-                            <!--     <attribute name="name">-1</attribute> -->
-                            <!-- </attributes> -->
                         </child>
                     </object>
                     <packing>
