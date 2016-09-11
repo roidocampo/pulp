@@ -1,0 +1,71 @@
+<?xml version="1.0" standalone="no"?> <!--*- mode: xml -*-->
+<app-bundle>
+
+    <meta>
+        <!-- Where to pick up the GTK+ installation, icon themes,
+             etc. Note that "${env:JHBUILD_PREFIX}" is evaluated to the
+             value of the environment variable JHBUILD_PREFIX. You can
+             define additional prefixes and refer to them in paths
+             throughout this file on the form "${prefix:name}". This is
+             useful for installing certain libraries or even the
+             application itself separately. Note that JHBUILD_PREFIX is
+             defined by jhbuild, so it you are not using jhbuild you can
+             either define your own or just hardcode the path here.
+        -->
+        <prefix name="default">${env:JHBUILD_PREFIX}</prefix>
+
+        <!-- The project directory is the default location of the created
+             app. If you leave out the path, the current directory is
+             used. Note the usage of an environment variable here again.
+        -->
+        <destination overwrite="yes">${env:HOME}/..</destination>
+
+        <!-- Comment this out to keep the install names in binaries.  -->
+        <run-install-name-tool/>
+
+        <!-- A launcher script is pretty much mandatory here so that we can
+             set $PYTHON to point to the python in the bundle.
+        -->
+        <launcher-script>${project}/launcher.sh</launcher-script>
+
+        <!-- Indicate the active gtk version to use. This is needed only
+             for gtk+-3.0 projects. -->
+        <gtk>gtk+-3.0</gtk>
+    </meta>
+
+    <!-- The special macro "${project}" refers to the directory where
+         this bundle file is located. The application name and bundle
+         identifier are taken from the plist file.
+    -->
+    <plist>${project}/Info.plist</plist>
+
+    <!-- This is mandatory, and the result gets named to the appname from
+         Info.plist with bin tacked on the end. We don't need this, so we use
+         gtk3-demo and ignore it. Using gtk3-demo should have the side effect
+         of pulling in all the gtk dependencies that we need.
+    -->
+    <main-binary>
+        ${prefix}/bin/gtk3-demo
+    </main-binary>
+
+    <!-- We need to pack our own Python to avoid compatibility problems. -->
+    <binary dest="${bundle}/Contents/MacOS">
+        ${prefix}/bin/python3.4
+    </binary>
+
+    <!-- We have to pull in the python modules, which are mixed python
+         and loadable modules.
+    -->
+    <data>
+        ${prefix}/lib/python3.4/
+    </data>
+    <data dest="${bundle}/Contents/Resources/opt/app-packages">
+        ${project}/../src/
+    </data>
+
+    <!-- Copy icons. -->
+    <data dest="${bundle}/Contents/Resources">
+        ${project}/orange_slice.icns
+    </data>
+
+</app-bundle>
