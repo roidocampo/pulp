@@ -3,6 +3,13 @@
     <menu id="app-menu">
         <section>
             <item>
+                <attribute name="label">New Window</attribute>
+                <attribute name="action">app.newwindow</attribute>
+                <attribute name='accel'>&lt;Primary&gt;N</attribute>
+            </item>
+        </section>
+        <section>
+            <item>
                 <attribute name="label">Duplicate</attribute>
                 <attribute name="action">win.duplicate</attribute>
                 <attribute name='accel'>&lt;Primary&gt;D</attribute>

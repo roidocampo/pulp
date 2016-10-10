@@ -269,14 +269,16 @@ class PulpWindow(Gtk.ApplicationWindow):
         dialog = Gtk.MessageDialog(self, 0, 
                                    Gtk.MessageType.WARNING,
                                    Gtk.ButtonsType.YES_NO, 
-                                   "\nAre you sure you want to quit Pulp?")
+                                   "\nAre you sure you want to quit this Pulp window?")
         dialog.format_secondary_text(
             "There are several documents opened.")
         response = dialog.run()
         dialog.destroy()
         self.in_dialog = False
         if response == Gtk.ResponseType.YES:
-            self.app.quit()
+            self.close()
+            self.app.remove_window(self)
+            self.app.quit_if_needed()
 
     ####################################################################
     # Go to page
@@ -949,7 +951,7 @@ class PulpApplication(Gtk.Application):
         self.start_server()
         self.setup_css()
         self.setup_menu()
-        # self.setup_actions()
+        self.setup_actions()
         self.setup_tempdir()
         self._fds_debug = FdsDebug()
 
@@ -977,11 +979,20 @@ class PulpApplication(Gtk.Application):
             action = Gio.SimpleAction.new(name, None)
             action.connect('activate', callback)
             self.add_action(action)
-        add_simple_action("quit", self.on_action_quit)
+        add_simple_action("newwindow", self.on_action_new_window)
 
     def setup_tempdir(self):
         self.tempdir = tempfile.mkdtemp()
 
+    ####################################################################
+    # Quit if no windows are opened
+    ####################################################################
+
+    def quit_if_needed(self):
+        windows = self.get_windows()
+        if not windows:
+            self.quit()
+    
     ####################################################################
     # Clean exit
     ####################################################################
@@ -1016,6 +1027,15 @@ class PulpApplication(Gtk.Application):
         file = Gio.File.new_for_path(path)
         self.do_open([file])
 
+    ####################################################################
+    # New Window
+    ####################################################################
+
+    def on_action_new_window(self, *args):
+        new_win = PulpWindow(self)
+        new_win.show_all()
+        new_win.present()
+    
 
 ########################################################################
 # Main entry point
