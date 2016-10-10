@@ -246,7 +246,12 @@ class PulpWindow(Gtk.ApplicationWindow):
         self.geometry_fullscreen = AttrDict(
             pos=(0, 23), size=(max_width, max_height-23),
             decorated=False)
-        self.fullscreen = None
+        if max_width > 2000:
+            self.geometry_restore = AttrDict(
+                pos=(max_width/2-5,50), size=(max_width/2, max_height-55), decorated=True)
+            self.fullscreen = True
+        else:
+            self.fullscreen = None
         self.on_action_fullscreen()
 
     ####################################################################
