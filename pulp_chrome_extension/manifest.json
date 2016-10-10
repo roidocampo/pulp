@@ -1,22 +1,23 @@
 {
-  "manifest_version": 2,
-  "name": "Pulp Extension",
-  "version": "0.1",
-  "permissions": [
-    "http://*/"
-  ],
-  "content_scripts": [
-    {
-      "matches": [
-        "http://arxiv.org/abs/*"
-      ],
-      "js": ["jquery-3.0.0.min.js", "content.js"]
-    },
-    {
-      "matches": [
-        "https://arxiv.org/abs/*"
-      ],
-      "js": ["content_https.js"]
+    "manifest_version": 2,
+    "name": "Pulp Extension",
+    "version": "0.1",
+    "permissions": [
+        "http://*/",
+        "https://*/"
+    ],
+    "content_scripts": [
+        {
+            "matches": ["https://arxiv.org/abs/*"],
+            "js": ["jquery-3.0.0.min.js", "content.js"]
+        },
+        {
+            "matches": ["http://arxiv.org/abs/*"],
+            "js": ["content_http.js"]
+        }
+    ],
+    "background": {
+        "scripts": ["background.js"],
+        "persistent": false
     }
-  ]
 }
