@@ -241,9 +241,6 @@ class PulpWindow(Gtk.ApplicationWindow):
         self.geometry_restore = AttrDict(
             pos=(50,50), size=(800, 500), decorated=True)
         screen = Gdk.Screen.get_default()
-        print("Scale factor:", self.get_scale_factor())
-        import os
-        print(os.environ)
         max_width = screen.width()
         max_height = screen.height()
         self.geometry_fullscreen = AttrDict(
