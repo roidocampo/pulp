@@ -241,6 +241,9 @@ class PulpWindow(Gtk.ApplicationWindow):
         self.geometry_restore = AttrDict(
             pos=(50,50), size=(800, 500), decorated=True)
         screen = Gdk.Screen.get_default()
+        print("Scale factor:", self.get_scale_factor())
+        import os
+        print(os.environ)
         max_width = screen.width()
         max_height = screen.height()
         self.geometry_fullscreen = AttrDict(
@@ -944,6 +947,7 @@ class PulpApplication(Gtk.Application):
     def __init__(self, *args):
         self.osx_app = GtkosxApplication.Application()
         self.osx_app.connect('NSApplicationOpenFile', self.do_open_mac)
+        self._startup_done = False
         super().__init__(*args)
 
     def do_startup(self, *args):
@@ -954,6 +958,7 @@ class PulpApplication(Gtk.Application):
         self.setup_actions()
         self.setup_tempdir()
         self._fds_debug = FdsDebug()
+        self._startup_done = True
 
     def start_server(self):
         self.server_proc = pulp_server.start_pulp_server()
@@ -1012,6 +1017,8 @@ class PulpApplication(Gtk.Application):
         self.do_open()
 
     def do_open(self, files=[], hint=None):
+        if not self._startup_done:
+            self.do_startup()
         window = self.get_windows()
         if window:
             window = window[0]

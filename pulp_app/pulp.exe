@@ -43,13 +43,6 @@ real_python=$(dirname "${real_python}")
 real_python=$(dirname "${real_python}")
 real_python=${real_python}/Resources/Python.app/Contents/MacOS/Python
 
-linked_python=${dir}/Python
-
-if [ "$(real_path "${linked_python}")" != "${real_python}" ]
-then
-    ln -f -s "$real_python" "$linked_python"
-fi
-
 cd "$HOME"
 
 export PYTHONPATH=${resources}
@@ -57,4 +50,4 @@ export PYTHONUNBUFFERED=yes
 
 date
 
-exec "$linked_python" -m pulp_gtk
+exec "$real_python" -m pulp_gtk
