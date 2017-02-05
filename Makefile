@@ -8,7 +8,7 @@ APP_DIR           = ${BUILD_DIR}/${APP_NAME}.app
 CONTENTS_DIR      = ${APP_DIR}/Contents
 BIN_DIR           = ${CONTENTS_DIR}/MacOS
 RESOURCES_DIR     = ${CONTENTS_DIR}/Resources
-TARGET_MODULE_DIR = ${RESOURCES_DIR}/${MODULE_DIR}
+TARGET_MODULE_DIR = ${RESOURCES_DIR}/python_modules/${MODULE_DIR}
 
 MODULE_SOURCES = $(wildcard ${MODULE_DIR}/*.*)
 

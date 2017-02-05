@@ -1042,10 +1042,23 @@ class PulpApplication(Gtk.Application):
     
 
 ########################################################################
+# Helper function to set menubar title
+########################################################################
+
+def menubar_helper():
+    from Foundation import NSBundle
+    bundle = NSBundle.mainBundle()
+    if bundle:
+        info = bundle.localizedInfoDictionary() or bundle.infoDictionary()
+        if info and info['CFBundleName'] == 'Python':
+            info['CFBundleName'] = 'Pulp'
+
+########################################################################
 # Main entry point
 ########################################################################
 
 def main():
+    menubar_helper()
     app = PulpApplication()
     app.run()
 

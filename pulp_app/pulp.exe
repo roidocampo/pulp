@@ -35,7 +35,7 @@ dir=$(real_path $0)
 dir=$(dirname ${dir})
 
 resources=$(dirname ${dir})
-resources=${resources}/Resources
+resources=${resources}/Resources/python_modules
 
 real_python="/usr/local/bin/python3"
 real_python=$(real_path "${real_python}")
