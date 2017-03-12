@@ -10,6 +10,11 @@
         </section>
         <section>
             <item>
+                <attribute name="label">Reload</attribute>
+                <attribute name="action">win.reload</attribute>
+                <attribute name='accel'>&lt;Primary&gt;R</attribute>
+            </item>
+            <item>
                 <attribute name="label">Duplicate</attribute>
                 <attribute name="action">win.duplicate</attribute>
                 <attribute name='accel'>&lt;Primary&gt;D</attribute>

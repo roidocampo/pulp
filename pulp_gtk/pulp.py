@@ -205,6 +205,7 @@ class PulpWindow(Gtk.ApplicationWindow):
             action = Gio.SimpleAction.new(name, None)
             action.connect('activate', callback)
             self.add_action(action)
+        add_simple_action("reload", self.on_action_reload)
         add_simple_action("duplicate", self.on_action_duplicate)
         add_simple_action("close", self.on_action_close)
         add_simple_action("undoclose", self.on_action_undo_close)
@@ -730,6 +731,17 @@ class PulpWindow(Gtk.ApplicationWindow):
             doc_view.view.find_started(doc_view.find_job)
             doc_view.find_job.scheduler_push_job(
                 EvinceView.JobPriority.PRIORITY_LOW)
+
+    ####################################################################
+    # Reload opened file
+    ####################################################################
+
+    def on_action_reload(self, *args):
+        doc_view = self.get_current_doc_view()
+        if doc_view:
+            print(doc_view.path, doc_view.orig_path)
+            doc_view.doc.load('file://' + doc_view.path)
+            doc_view.view.reload()
 
     ####################################################################
     # Duplicate opened file
