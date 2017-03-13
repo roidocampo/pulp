@@ -1055,6 +1055,7 @@ class PulpApplication(Gtk.Application):
         self.setup_tempdir()
         self._fds_debug = FdsDebug()
         self._startup_done = True
+        self._latex_window = None
 
     def start_server(self):
         self.server_proc, self.server_queue = pulp_server.start_pulp_server()
@@ -1136,9 +1137,13 @@ class PulpApplication(Gtk.Application):
     ####################################################################
 
     def on_action_new_window(self, *args):
+        self.create_new_window()
+
+    def create_new_window(self):
         new_win = PulpWindow(self)
         new_win.show_all()
         new_win.present()
+        return new_win
     
     ####################################################################
     # Server queue
@@ -1176,7 +1181,12 @@ class PulpApplication(Gtk.Application):
         for win in self.get_windows():
             success = win.synctex_forward_search(pdf, tex, line, col)
             if success:
-                break
+                return
+        print("SyncTex open")
+        if self._latex_window is None:
+            self._latex_window = self.create_new_window()
+        self._latex_window.open_file(pdf, None, True)
+        self._latex_window.synctex_forward_search(pdf, tex, line, col)
 
 
 ########################################################################
