@@ -19,21 +19,26 @@ class PulpServer:
 
     @classmethod
     def start_multiprocess(cls):
+        queue = multiprocessing.Queue()
         proc = multiprocessing.Process(
             target = cls.serve_forever,
+            args = (queue,),
             daemon = True
         )
         proc.start()
-        return proc
+        return proc, queue
 
     @classmethod
-    def serve_forever(cls):
-        app = cls()
+    def serve_forever(cls, queue):
+        app = cls(queue)
         httpd = wsgiref.simple_server.make_server (
             'localhost', 23232, app,
             handler_class = PulpRequestHandler
         )
         httpd.serve_forever()
+
+    def __init__(self, queue):
+        self.queue = queue
 
     def __call__(self, environ, start_response):
 
@@ -50,6 +55,10 @@ class PulpServer:
             response_body = self.get_search(query)
         elif path == "/open":
             self.do_open(query)
+        elif path == "/view":
+            self.do_view(query)
+        elif path == "/synctex_forward_search":
+            self.do_synctex_forward_search(query)
 
         response_body = response_body.encode('utf-8')
 
@@ -127,6 +136,21 @@ class PulpServer:
         file_path = os.path.join("/Users/roi/Google Drive/Zotero", file_name)
         if os.path.exists(file_path):
             subprocess.call(["open", file_path])
+
+    def do_view(self, query):
+        file_path = urllib.parse.unquote_plus(query)
+        self.queue.put(["view", file_path])
+
+    def do_synctex_forward_search(self, query):
+        args = urllib.parse.parse_qs(query)
+        try:
+            pdf = args["pdf"][0]
+            tex = args["tex"][0]
+            col = int(args["col"][0])
+            line = int(args["line"][0])
+        except:
+            return
+        self.queue.put(["synctex_forward_search", pdf, tex, line, col])
 
 start_pulp_server = PulpServer.start_multiprocess
 

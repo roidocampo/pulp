@@ -7,6 +7,8 @@
 import ast
 import base64
 import collections
+import ctypes
+import datetime
 import gi
 import os
 import pkg_resources
@@ -149,6 +151,7 @@ class FdsDebug:
 
         self.fds = new_fds
         return True
+
 
 ########################################################################
 # PulpWindow Class
@@ -351,11 +354,14 @@ class PulpWindow(Gtk.ApplicationWindow):
     # Open File
     ####################################################################
     
-    def open_file(self, file_path, orig_doc_view=None, at_end=False):
+    def open_file(self, file_path, orig_doc_view=None, at_end=False, close_orig=False):
         FdsDebug.log("OPEN", repr(file_path.encode('utf-8')))
         doc_view = self.create_doc_view(file_path, orig_doc_view)
         self.insert_in_sidebar(doc_view, at_end)
         self.sync(doc_view, orig_doc_view)
+        if close_orig:
+            self.close_doc_view(name=orig_doc_view.name)
+            self.sidebar_selection_changed()
 
     def create_doc_view(self, path, orig_doc_view=None):
         orig_path = path
@@ -413,6 +419,7 @@ class PulpWindow(Gtk.ApplicationWindow):
             self.autoreload_list[name] = doc_view
         view.connect("handle-link", self.handle_link, doc_view)
         view.connect("external-link", self.external_link)
+        view.connect("sync-source", self.synctex_backward_search)
         model.connect("page-changed", self.page_changed, doc_view)
         view.connect('key-press-event', self.keypress_view)
         search_entry.connect('search-changed', self.search_changed, doc_view)
@@ -524,22 +531,32 @@ class PulpWindow(Gtk.ApplicationWindow):
         cursor, col = self.sidebar_treeview.get_cursor()
         if cursor:
             itr = self.sidebar_model.get_iter(cursor)
-            name = self.sidebar_model.get_value(itr, 1)
-            self.sidebar_model.remove(itr)
-            if name in self.doc_views:
-                doc_view = self.doc_views[name]
-                self.create_close_history_item(doc_view)
-                FdsDebug.log("CLOSE", repr(doc_view.path.encode("utf-8")))
-                if self.check_doc_view_path_is_unique(doc_view):
-                    self.close_file_descriptor(doc_view.path)
-                self.stack.remove(doc_view.view)
-                del self.doc_views[name]
-                if name in self.autoreload_list:
-                    del self.autoreload_list[name]
-                if not self.doc_views:
-                    self.stack.set_visible_child(self.nada)
-                    self.pages_label.set_text('')
+            self.close_doc_view(itr=itr)
         self.sidebar_selection_changed()
+
+    def close_doc_view(self, itr=None, name=None):
+        if name is None:
+            name = self.sidebar_model.get_value(itr, 1)
+        if itr is None:
+            for row in self.sidebar_model:
+                if name == row[1]:
+                    itr = row.iter
+                    break
+        if itr is not None:
+            self.sidebar_model.remove(itr)
+        if name in self.doc_views:
+            doc_view = self.doc_views[name]
+            self.create_close_history_item(doc_view)
+            FdsDebug.log("CLOSE", repr(doc_view.path.encode("utf-8")))
+            if self.check_doc_view_path_is_unique(doc_view):
+                self.close_file_descriptor(doc_view.path)
+            self.stack.remove(doc_view.view)
+            del self.doc_views[name]
+            if name in self.autoreload_list:
+                del self.autoreload_list[name]
+            if not self.doc_views:
+                self.stack.set_visible_child(self.nada)
+                self.pages_label.set_text('')
 
     def create_close_history_item(self, doc_view):
         hi = AttrDict(
@@ -745,15 +762,21 @@ class PulpWindow(Gtk.ApplicationWindow):
     ####################################################################
 
     def reload(self, doc_view):
-        doc_view.doc.load('file://' + doc_view.path)
-        doc_view.view.reload()
+        # doc_view.doc.load('file://' + doc_view.path)
+        # doc_view.view.reload()
+        self.open_file(
+            doc_view.orig_path, 
+            doc_view,
+            close_orig=True)
 
     def autoreload(self):
         for doc_view in self.autoreload_list.values():
             new_stamp = os.stat(doc_view.path).st_mtime
             if new_stamp != doc_view.time_stamp:
-                doc_view.time_stamp = new_stamp
-                self.reload(doc_view)
+                def later():
+                    # doc_view.time_stamp = new_stamp
+                    self.reload(doc_view)
+                GLib.timeout_add(10, later)
         return True
 
     ####################################################################
@@ -961,6 +984,48 @@ class PulpWindow(Gtk.ApplicationWindow):
     #     if b64:
     #         return base64.b64decode(b64)
 
+    ####################################################################
+    # SyncTeX
+    ####################################################################
+
+    def synctex_forward_search(self, pdf, tex, line, col):
+        for row in self.sidebar_model:
+            name = row[1]
+            if name in self.doc_views:
+                doc_view = self.doc_views[name]
+                if doc_view.orig_path == pdf:
+                    doc = doc_view.doc
+                    if doc.has_synctex():
+                        sl = EvinceDocument.SourceLink.new(
+                            tex, line, col)
+                        doc_view.view.highlight_forward_search(sl)
+                    return True
+
+    def synctex_backward_search(self, widget, o):
+        class SL(ctypes.Structure):
+            _fields_ = [
+                ("filename", ctypes.c_char_p),
+                ("line",     ctypes.c_int),
+                ("col",      ctypes.c_int)
+            ]
+        PSL = ctypes.POINTER(SL)
+        obj = ctypes.cast(o,PSL).contents
+        filename = obj.filename.decode("utf-8", "ignore")
+        filename = os.path.normpath(filename)
+        line = obj.line
+        watch_file = filename.replace(os.path.sep, "_@_")
+        watch_file = os.path.join("~", ".pulp_vim_search", watch_file)
+        watch_file = os.path.expanduser(watch_file)
+        watch_dir = os.path.join("~", ".pulp_vim_search")
+        watch_dir = os.path.expanduser(watch_dir)
+        t = datetime.datetime.now()
+        time_id = t.strftime("%s.%f")
+        os.makedirs(watch_dir, exist_ok=True)
+        with open(watch_file, "w") as file:
+            print(time_id, file=file)
+            print(line, file=file)
+        
+
 
 
 ########################################################################
@@ -992,7 +1057,8 @@ class PulpApplication(Gtk.Application):
         self._startup_done = True
 
     def start_server(self):
-        self.server_proc = pulp_server.start_pulp_server()
+        self.server_proc, self.server_queue = pulp_server.start_pulp_server()
+        GLib.timeout_add(1000, self.proc_server_queue)
 
     def setup_css(self):
         css_data = Resource.string("style.css")
@@ -1074,6 +1140,44 @@ class PulpApplication(Gtk.Application):
         new_win.show_all()
         new_win.present()
     
+    ####################################################################
+    # Server queue
+    ####################################################################
+
+    def proc_server_queue(self):
+        if not self._startup_done:
+            return True
+        while True:
+            try:
+                message = self.server_queue.get_nowait()
+            except:
+                break
+            self.proc_server_message(message)
+        return True
+
+    def proc_server_message(self, message):
+        action, *args = message
+        if action == "view":
+            action_cb = self.on_message_view
+        elif action == "synctex_forward_search":
+            action_cb = self.on_message_synctex_forward_search
+        else:
+            return
+        action_cb(*args)
+
+    def on_message_view(self, path):
+        print("View:", path)
+        for win in self.get_windows():
+            for row in win.sidebar_model:
+                print(row)
+
+    def on_message_synctex_forward_search(self, pdf, tex, line, col):
+        print("SyncTex Forward Search:", pdf, tex, line, col)
+        for win in self.get_windows():
+            success = win.synctex_forward_search(pdf, tex, line, col)
+            if success:
+                break
+
 
 ########################################################################
 # Helper function to set menubar title
