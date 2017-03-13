@@ -233,10 +233,12 @@ class PulpWindow(Gtk.ApplicationWindow):
     def init_misc(self):
         self.in_dialog = False
         self.doc_views = {}
+        self.autoreload_list = {}
         self.close_history = []
         self.open_count = 0
         self.in_search_entry_keypress = False
         self.tempdir = self.app.tempdir
+        GLib.timeout_add(1000, self.autoreload)
 
     def init_fullscreen(self):
         self.geometry_restore = AttrDict(
@@ -395,6 +397,7 @@ class PulpWindow(Gtk.ApplicationWindow):
 
         doc_view = AttrDict(
             view=view, model=model, doc=doc, box=box, 
+            time_stamp=None,
             # bibtex_container=bibtex_container,
             # bibtex_text=bibtex_text, # bibtex_button=bibtex_button,
             scroll=scroll, search_entry=search_entry,
@@ -405,6 +408,9 @@ class PulpWindow(Gtk.ApplicationWindow):
             find_job=None, history=[(0.0,0.0)], history_pos=0)
 
         self.doc_views[name] = doc_view
+        if mime == 'application/pdf':
+            doc_view.time_stamp = os.stat(doc_view.path).st_mtime
+            self.autoreload_list[name] = doc_view
         view.connect("handle-link", self.handle_link, doc_view)
         view.connect("external-link", self.external_link)
         model.connect("page-changed", self.page_changed, doc_view)
@@ -528,6 +534,8 @@ class PulpWindow(Gtk.ApplicationWindow):
                     self.close_file_descriptor(doc_view.path)
                 self.stack.remove(doc_view.view)
                 del self.doc_views[name]
+                if name in self.autoreload_list:
+                    del self.autoreload_list[name]
                 if not self.doc_views:
                     self.stack.set_visible_child(self.nada)
                     self.pages_label.set_text('')
@@ -733,15 +741,29 @@ class PulpWindow(Gtk.ApplicationWindow):
                 EvinceView.JobPriority.PRIORITY_LOW)
 
     ####################################################################
+    # Autoreload
+    ####################################################################
+
+    def reload(self, doc_view):
+        doc_view.doc.load('file://' + doc_view.path)
+        doc_view.view.reload()
+
+    def autoreload(self):
+        for doc_view in self.autoreload_list.values():
+            new_stamp = os.stat(doc_view.path).st_mtime
+            if new_stamp != doc_view.time_stamp:
+                doc_view.time_stamp = new_stamp
+                self.reload(doc_view)
+        return True
+
+    ####################################################################
     # Reload opened file
     ####################################################################
 
     def on_action_reload(self, *args):
         doc_view = self.get_current_doc_view()
         if doc_view:
-            print(doc_view.path, doc_view.orig_path)
-            doc_view.doc.load('file://' + doc_view.path)
-            doc_view.view.reload()
+            self.reload(doc_view)
 
     ####################################################################
     # Duplicate opened file
