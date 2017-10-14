@@ -428,7 +428,7 @@ class PulpWindow(Gtk.ApplicationWindow):
         bib_path = os.path.join(base, "bib", filename + ".bib")
         title = filename.replace("_", " ")
         if ext == ".djvu":
-            mime = 'image/vnd.djvu'
+            mime = 'image/vnd.djvu+multipage'
             mime_name = "DjVu"
         elif ext == ".ps":
             mime = 'application/postscript'
@@ -442,7 +442,7 @@ class PulpWindow(Gtk.ApplicationWindow):
         return name, title, mime, mime_name, bib_path
 
     def load_doc(self, mime, path, orig_doc_view=None):
-        if mime != 'image/vnd.djvu':
+        if mime != 'image/vnd.djvu+multipage':
             try:
                 doc = EvinceDocument.backends_manager_get_document(mime)
                 doc.load('file://' + path)
@@ -759,7 +759,7 @@ class PulpWindow(Gtk.ApplicationWindow):
     def on_action_preview(self, *args):
         doc_view = self.get_current_doc_view()
         if doc_view:
-            if doc_view.mime == "image/vnd.djvu":
+            if doc_view.mime == "image/vnd.djvu+multipage":
                 app = "DjView"
             else:
                 app = "Preview"
@@ -772,7 +772,7 @@ class PulpWindow(Gtk.ApplicationWindow):
     def on_action_print(self, *args):
         doc_view = self.get_current_doc_view()
         if doc_view:
-            if doc_view.mime == "image/vnd.djvu":
+            if doc_view.mime == "image/vnd.djvu+multipage":
                 app = "DjView"
             else:
                 app = "Preview"
